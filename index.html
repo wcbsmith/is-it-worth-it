@@ -3,54 +3,64 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
-<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1a1410" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#ece3ce" media="(prefers-color-scheme: light)" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Worth It?" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..800,0..100;1,9..144,300..800,0..100&display=swap" rel="stylesheet" />
 <title>Is it worth it?</title>
 <style>
   :root {
-    --bg: #f8fafc;
-    --surface: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --accent: #16a34a;
-    --accent-soft: #dcfce7;
-    --danger: #dc2626;
-    --border: #e2e8f0;
-    --chip-bg: #f1f5f9;
-    --chip-active-bg: #0f172a;
-    --chip-active-text: #ffffff;
+    --paper: #ece3ce;
+    --paper-soft: #f3ecda;
+    --ink: #1f1612;
+    --ink-soft: #4a3d33;
+    --muted: #8b7e6b;
+    --rule: #c9bda1;
+    --accent: #7a2e2e;
+    --accent-soft: #a05050;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --accent: #4ade80;
-      --accent-soft: #14532d;
-      --danger: #f87171;
-      --border: #334155;
-      --chip-bg: #334155;
-      --chip-active-bg: #f1f5f9;
-      --chip-active-text: #0f172a;
+      --paper: #1a1410;
+      --paper-soft: #221b15;
+      --ink: #ece1c9;
+      --ink-soft: #b5a892;
+      --muted: #807461;
+      --rule: #3a3026;
+      --accent: #d18468;
+      --accent-soft: #e8a78a;
     }
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0;
     padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-variation-settings: 'opsz' 14, 'SOFT' 50, 'wght' 400;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior-y: none;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(122, 46, 46, 0.025), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(31, 22, 18, 0.03), transparent 60%);
+    mix-blend-mode: multiply;
   }
   body {
     min-height: 100vh;
@@ -58,311 +68,556 @@
     display: flex;
     flex-direction: column;
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    position: relative;
   }
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 8px;
-  }
-  header h1 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: -0.01em;
-  }
-  .icon-btn {
-    background: transparent;
-    border: 0;
-    padding: 8px;
-    margin: -8px;
-    border-radius: 999px;
-    color: var(--muted);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .icon-btn:hover, .icon-btn:focus-visible { color: var(--text); }
-  .icon-btn svg { width: 22px; height: 22px; }
+
   main {
+    position: relative;
+    z-index: 1;
     flex: 1;
-    padding: 8px 20px 24px;
-    max-width: 560px;
+    padding: 56px 28px 32px;
+    max-width: 620px;
     width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 40px;
+  }
+
+  /* prompt section: chips as editorial TOC */
+  .prompt-lead {
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-variation-settings: 'opsz' 9, 'wght' 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
   .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 0;
+    align-items: baseline;
+    row-gap: 6px;
   }
   .chip {
-    background: var(--chip-bg);
-    color: var(--text);
+    background: transparent;
     border: 0;
-    padding: 10px 14px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 120ms ease, color 120ms ease;
-  }
-  .chip[aria-pressed="true"] {
-    background: var(--chip-active-bg);
-    color: var(--chip-active-text);
-  }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .label {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 17px;
+    font-variation-settings: 'opsz' 14, 'SOFT' 70, 'wght' 400;
+    font-style: italic;
     color: var(--muted);
-    font-weight: 600;
-    margin-bottom: 8px;
+    cursor: pointer;
+    transition: color 180ms ease;
+    text-decoration: none;
+    text-underline-offset: 5px;
+    text-decoration-thickness: 1.5px;
   }
-  .amount {
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0;
-    color: var(--text);
+  .chip:hover { color: var(--ink-soft); }
+  .chip[aria-pressed="true"] {
+    color: var(--ink);
+    font-variation-settings: 'opsz' 14, 'SOFT' 70, 'wght' 500;
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 5px;
+  }
+  .chip-sep {
+    color: var(--rule);
+    padding: 0 11px;
+    user-select: none;
+    font-style: normal;
+  }
+
+  /* the letter */
+  .letter {
+    font-size: 26px;
+    line-height: 1.42;
+    font-variation-settings: 'opsz' 36, 'SOFT' 60, 'wght' 400;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .letter p { margin: 0 0 10px; }
+  .letter p:last-child { margin-bottom: 0; }
+
+  .today-amount {
+    font-variation-settings: 'opsz' 36, 'SOFT' 50, 'wght' 600;
+    color: var(--ink);
     cursor: text;
+    border-bottom: 1px dashed var(--muted);
+    padding: 0 2px 1px;
+    margin: 0 -2px;
+    transition: border-color 180ms ease;
+  }
+  .today-amount:hover { border-bottom-color: var(--accent); }
+  .today-amount.editing { border-bottom-color: var(--accent); }
+
+  .noun {
+    font-style: italic;
+    font-variation-settings: 'opsz' 36, 'SOFT' 80, 'wght' 400;
+    color: var(--ink-soft);
+  }
+
+  .future-line {
+    margin-top: 24px !important;
+    color: var(--ink-soft);
+  }
+  .future-you {
+    font-style: italic;
+    font-variation-settings: 'opsz' 36, 'SOFT' 100, 'wght' 400;
+    color: var(--ink);
+  }
+
+  .future-amount-wrap {
+    margin: 14px 0 8px !important;
     display: inline-block;
-    min-width: 1ch;
-    border-radius: 6px;
-    padding: 2px 4px;
-    margin-left: -4px;
-  }
-  .amount:hover { background: var(--chip-bg); }
-  .amount.editing {
-    outline: 2px solid var(--accent);
-    background: var(--surface);
-  }
-  .future-card {
-    background: linear-gradient(135deg, var(--accent-soft), var(--surface));
-    border-color: transparent;
   }
   .future-amount {
-    font-size: 48px;
-    font-weight: 800;
-    letter-spacing: -0.025em;
+    display: block;
+    font-size: 76px;
+    line-height: 1;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30, 'wght' 500;
     color: var(--accent);
-    margin: 0;
-    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
   }
-  .future-sub {
-    margin-top: 10px;
-    font-size: 14px;
-    color: var(--muted);
+  .underline-svg {
+    display: block;
+    height: 8px;
+    margin-top: 2px;
+    color: var(--accent);
+    overflow: visible;
+    width: 0; /* set dynamically to match number width */
   }
-  .editable-inline {
-    color: var(--text);
-    font-weight: 600;
-    border-bottom: 1px dashed var(--muted);
+  .underline-svg path {
+    stroke-dasharray: var(--len, 220);
+    stroke-dashoffset: var(--len, 220);
+    transition: stroke-dashoffset 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .underline-svg.drawn path { stroke-dashoffset: 0; }
+
+  .closing-line { color: var(--ink-soft); }
+  .year {
+    color: var(--ink);
+    font-variation-settings: 'opsz' 36, 'SOFT' 50, 'wght' 600;
     cursor: pointer;
-    padding: 0 2px;
+    border-bottom: 1px dashed var(--muted);
+    padding: 0 2px 1px;
+    margin: 0 -2px;
+    transition: border-color 180ms ease;
   }
-  .editable-inline:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .year:hover { border-bottom-color: var(--accent); }
+
+  /* meta zone — operations live here */
+  .meta {
+    margin-top: auto;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
   .toggle {
     display: inline-flex;
-    background: var(--chip-bg);
-    border-radius: 999px;
-    padding: 3px;
-    margin-top: 14px;
+    align-items: baseline;
+    font-size: 12px;
+    font-variation-settings: 'opsz' 9, 'wght' 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
   .toggle button {
     background: transparent;
     border: 0;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
+    font: inherit;
     color: var(--muted);
+    padding: 4px 0;
     cursor: pointer;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    transition: color 180ms ease;
+    position: relative;
   }
-  .toggle button[aria-pressed="true"] {
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  .toggle button:hover { color: var(--ink-soft); }
+  .toggle button[aria-pressed="true"] { color: var(--ink); }
+  .toggle button[aria-pressed="true"]::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
   }
-  .assumption {
-    font-size: 12px;
-    color: var(--muted);
-    text-align: center;
-  }
-  /* Modal */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 10;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    color: var(--text);
-    width: 100%;
-    max-width: 560px;
-    border-radius: 20px 20px 0 0;
-    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
-    animation: slideUp 220ms ease;
-  }
-  @media (min-width: 600px) {
-    .modal-backdrop { align-items: center; }
-    .modal { border-radius: 20px; margin: 20px; }
-  }
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .modal h2 {
-    margin: 0 0 16px;
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 14px;
-  }
-  .field label {
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-  .field input {
-    font-size: 16px; /* prevent iOS zoom */
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg);
-    color: var(--text);
-    font-family: inherit;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .field input:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: -1px;
-    border-color: transparent;
-  }
-  .modal-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  .btn {
-    flex: 1;
-    padding: 12px 16px;
-    border-radius: 10px;
+  .toggle .sep { color: var(--rule); padding: 0 10px; }
+
+  .settings-btn {
+    background: transparent;
     border: 0;
-    font-size: 15px;
-    font-weight: 600;
+    padding: 4px 0;
+    color: var(--muted);
     cursor: pointer;
     font-family: inherit;
+    font-size: 11px;
+    font-variation-settings: 'opsz' 9, 'wght' 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 180ms ease;
   }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-secondary { background: var(--chip-bg); color: var(--text); }
+  .settings-btn:hover, .settings-btn:focus-visible { color: var(--ink); outline: none; }
+
+  .footnote {
+    margin: 0;
+    font-size: 13px;
+    font-variation-settings: 'opsz' 9, 'SOFT' 70, 'wght' 400;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .footnote::before { content: '— '; color: var(--rule); }
+
+  .invest-cta {
+    display: inline-block;
+    margin-top: 22px;
+    background: transparent;
+    border: 0;
+    font-family: inherit;
+    font-style: italic;
+    font-variation-settings: 'opsz' 36, 'SOFT' 90, 'wght' 500;
+    font-size: 24px;
+    line-height: 1.3;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 4px 0 6px;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-soft);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 6px;
+    transition: color 180ms ease, text-decoration-color 180ms ease;
+    text-align: left;
+  }
+  .invest-cta:hover {
+    color: var(--ink);
+    text-decoration-color: var(--ink);
+  }
+  .invest-cta[hidden] { display: none; }
+  .invest-arrow {
+    display: inline-block;
+    font-style: normal;
+    margin-left: 2px;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .invest-cta:hover .invest-arrow { transform: translateX(4px); }
+
+  .invest-hint {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 22px 0 0 !important;
+  }
+  .invest-hint[hidden] { display: none; }
+  .invest-hint-text {
+    background: transparent;
+    border: 0;
+    padding: 4px 0;
+    font-family: inherit;
+    font-style: italic;
+    font-variation-settings: 'opsz' 14, 'SOFT' 80, 'wght' 400;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-align: left;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+    transition: color 180ms ease, text-decoration-color 180ms ease;
+    flex: 1;
+  }
+  .invest-hint-text:hover,
+  .invest-hint-text:focus-visible {
+    color: var(--ink);
+    text-decoration-color: var(--rule);
+    outline: none;
+  }
+  .invest-hint-dismiss {
+    background: transparent;
+    border: 0;
+    padding: 2px 6px;
+    margin: 0 -6px 0 0;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 1;
+    opacity: 0.5;
+    transition: opacity 180ms ease, color 180ms ease;
+    align-self: center;
+  }
+  .invest-hint-dismiss:hover,
+  .invest-hint-dismiss:focus-visible {
+    opacity: 1;
+    color: var(--ink);
+    outline: none;
+  }
+
+  @media (max-width: 380px) {
+    .invest-cta { font-size: 20px; margin-top: 18px; }
+    .invest-hint-text { font-size: 16px; }
+  }
+
+  /* inline edit inputs */
   .amount-input {
     font: inherit;
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
+    font-size: inherit;
+    font-variation-settings: 'opsz' 36, 'SOFT' 50, 'wght' 600;
+    color: var(--ink);
     background: transparent;
     border: 0;
-    width: 100%;
-    padding: 2px 4px;
-    margin-left: -4px;
-    outline: 2px solid var(--accent);
-    border-radius: 6px;
+    border-bottom: 1px dashed var(--accent);
+    padding: 0 2px 1px;
+    margin: 0 -2px;
+    width: 6ch;
     -webkit-appearance: none;
     appearance: none;
   }
+  .amount-input:focus { outline: none; }
   .years-input {
     font: inherit;
-    font-weight: 600;
-    color: var(--text);
+    font-size: inherit;
+    font-variation-settings: 'opsz' 36, 'SOFT' 50, 'wght' 600;
+    color: var(--ink);
     background: transparent;
     border: 0;
-    border-bottom: 1px solid var(--accent);
-    width: 3.5ch;
+    border-bottom: 1px dashed var(--accent);
+    padding: 0 2px 1px;
+    margin: 0 -2px;
+    width: 5ch;
     text-align: center;
-    padding: 0;
     -webkit-appearance: none;
     appearance: none;
   }
   .years-input:focus { outline: none; }
+
+  /* stagger reveal on load */
+  .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: rise 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .reveal-1 { animation-delay: 80ms; }
+  .reveal-2 { animation-delay: 220ms; }
+  .reveal-3 { animation-delay: 380ms; }
+  .reveal-4 { animation-delay: 560ms; }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 22, 18, 0.4);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 20;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--paper-soft);
+    color: var(--ink);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 20px 20px 0 0;
+    padding: 28px 28px calc(28px + env(safe-area-inset-bottom));
+    animation: slideUp 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    border-top: 1px solid var(--rule);
+  }
+  @media (min-width: 600px) {
+    .modal-backdrop { align-items: center; }
+    .modal { border-radius: 14px; margin: 20px; border: 1px solid var(--rule); }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal h2 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-variation-settings: 'opsz' 36, 'SOFT' 60, 'wght' 500;
+    letter-spacing: -0.01em;
+  }
+  .modal-lead {
+    margin: 0 0 22px;
+    font-size: 13px;
+    font-variation-settings: 'opsz' 14, 'SOFT' 80, 'wght' 400;
+    font-style: italic;
+    color: var(--muted);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 18px;
+  }
+  .field label {
+    font-size: 10px;
+    font-variation-settings: 'opsz' 9, 'wght' 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field input {
+    font-family: inherit;
+    font-size: 20px;
+    font-variation-settings: 'opsz' 36, 'SOFT' 50, 'wght' 500;
+    color: var(--ink);
+    padding: 6px 0 8px;
+    border: 0;
+    border-bottom: 1px dashed var(--muted);
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 180ms ease;
+  }
+  .field input::placeholder {
+    color: var(--muted);
+    opacity: 0.6;
+    font-variation-settings: 'opsz' 14, 'SOFT' 70, 'wght' 400;
+    font-style: italic;
+  }
+  .field input:focus { outline: none; border-bottom: 1px solid var(--accent); }
+  .field-help {
+    font-size: 12px;
+    font-variation-settings: 'opsz' 14, 'SOFT' 80, 'wght' 400;
+    font-style: italic;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .field-divider {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 22px -28px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 18px;
+    margin-top: 24px;
+    justify-content: flex-end;
+    align-items: baseline;
+  }
+  .btn {
+    background: transparent;
+    border: 0;
+    font-family: inherit;
+    font-size: 12px;
+    font-variation-settings: 'opsz' 9, 'wght' 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 180ms ease;
+  }
+  .btn:hover { color: var(--ink-soft); }
+  .btn-primary { color: var(--accent); }
+  .btn-primary:hover { color: var(--ink); }
+
+  @media (max-width: 380px) {
+    .letter { font-size: 22px; }
+    .future-amount { font-size: 60px; }
+    main { padding: 40px 22px 28px; gap: 32px; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Is it worth it?</h1>
-  <button class="icon-btn" id="settings-btn" aria-label="Settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-  </button>
-</header>
-
 <main>
-  <div class="chips" role="group" aria-label="Purchase type">
-    <button class="chip" data-preset="coffee" data-amount="6">Coffee</button>
-    <button class="chip" data-preset="takeout" data-amount="20">Take-Out</button>
-    <button class="chip" data-preset="lunch" data-amount="15">Lunch</button>
-    <button class="chip" data-preset="nightout" data-amount="60">Night Out</button>
-    <button class="chip" data-preset="custom">Custom</button>
-  </div>
-
-  <section class="card" aria-labelledby="today-label">
-    <div class="label" id="today-label">If you spend</div>
-    <div>
-      <span class="amount" id="today-amount" tabindex="0" role="button" aria-label="Tap to edit amount">$20</span>
+  <section class="reveal reveal-1">
+    <p class="prompt-lead">I'm thinking about</p>
+    <div class="chips" role="group" aria-label="Purchase type">
+      <button class="chip" data-preset="coffee" data-amount="6">coffee</button>
+      <span class="chip-sep" aria-hidden="true">·</span>
+      <button class="chip" data-preset="takeout" data-amount="20">take-out</button>
+      <span class="chip-sep" aria-hidden="true">·</span>
+      <button class="chip" data-preset="lunch" data-amount="15">lunch</button>
+      <span class="chip-sep" aria-hidden="true">·</span>
+      <button class="chip" data-preset="nightout" data-amount="60">a night out</button>
+      <span class="chip-sep" aria-hidden="true">·</span>
+      <button class="chip" data-preset="custom">something else</button>
     </div>
   </section>
 
-  <section class="card future-card" aria-labelledby="future-label">
-    <div class="label" id="future-label">It could be worth</div>
-    <p class="future-amount" id="future-amount">$0</p>
-    <p class="future-sub">
-      in <span class="editable-inline" id="years-display" tabindex="0" role="button" aria-label="Tap to change years">32</span> years
+  <section class="letter">
+    <p class="reveal reveal-2">If you invest this <span class="today-amount" id="today-amount" tabindex="0" role="button" aria-label="Tap to edit amount">$20</span> <span class="noun" id="noun-display">instead of take-out</span>,</p>
+    <p class="future-line reveal reveal-3"><span class="future-you">future you</span> could have</p>
+    <p class="future-amount-wrap reveal reveal-3">
+      <span class="future-amount" id="future-amount" aria-live="polite">$0</span>
+      <svg class="underline-svg" id="future-underline" viewBox="0 0 220 6" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2,3.5 Q40,5.5 80,2.8 T160,3.2 T218,3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />
+      </svg>
     </p>
-    <div class="toggle" role="group" aria-label="Return assumption">
-      <button id="toggle-real" aria-pressed="true">Today's $</button>
-      <button id="toggle-nominal" aria-pressed="false">Future $</button>
-    </div>
+    <p class="closing-line reveal reveal-4">waiting in <span class="year" id="year-display" tabindex="0" role="button" aria-label="Tap to change horizon">2058</span>.</p>
+    <a class="invest-cta reveal reveal-4" id="invest-cta" href="#" target="_blank" rel="noopener" hidden>
+      <span id="invest-cta-text">Invest the $20 now</span> <span class="invest-arrow">→</span>
+    </a>
+    <p class="invest-hint reveal reveal-4" id="invest-hint" hidden>
+      <button class="invest-hint-text" id="invest-hint-link" type="button">
+        P.S. — add your investing app to make this one tap.
+      </button>
+      <button class="invest-hint-dismiss" id="invest-hint-dismiss" type="button" aria-label="Dismiss this tip" title="Dismiss">×</button>
+    </p>
   </section>
 
-  <p class="assumption" id="assumption-text">
-    Assuming 7% real return (S&amp;P 500 historical, inflation-adjusted)
-  </p>
+  <div class="meta reveal reveal-4">
+    <div class="meta-row">
+      <div class="toggle" role="group" aria-label="Return assumption">
+        <button id="toggle-real" aria-pressed="true">Today's $</button>
+        <span class="sep">/</span>
+        <button id="toggle-nominal" aria-pressed="false"><span id="nominal-label">2058</span> $</button>
+      </div>
+      <button class="settings-btn" id="settings-btn" aria-label="Open settings">Settings</button>
+    </div>
+    <p class="footnote" id="assumption-text">
+      assuming 7% real return — the S&amp;P 500's long-run average, adjusted for inflation
+    </p>
+  </div>
 </main>
 
 <div class="modal-backdrop" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
   <div class="modal">
-    <h2 id="settings-title">Retirement settings</h2>
+    <h2 id="settings-title">A few details about future you</h2>
+    <p class="modal-lead">Saved on this device only.</p>
     <div class="field">
       <label for="birth-year">Birth year</label>
-      <input type="number" id="birth-year" inputmode="numeric" placeholder="e.g. 1990" min="1900" max="2100" />
+      <input type="number" id="birth-year" inputmode="numeric" placeholder="1990" min="1900" max="2100" />
     </div>
     <div class="field">
       <label for="retirement-age">Retirement age</label>
-      <input type="number" id="retirement-age" inputmode="numeric" placeholder="e.g. 65" min="18" max="120" />
+      <input type="number" id="retirement-age" inputmode="numeric" placeholder="65" min="18" max="120" />
+    </div>
+    <hr class="field-divider" />
+    <div class="field">
+      <label for="invest-url">Where you invest</label>
+      <input type="url" id="invest-url" inputmode="url" placeholder="https://… or app://" />
+      <p class="field-help">Add a link to your bank or brokerage app and we'll put a one-tap shortcut on the page.</p>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" id="settings-cancel">Cancel</button>
+      <button class="btn" id="settings-cancel">Cancel</button>
       <button class="btn btn-primary" id="settings-save">Save</button>
     </div>
   </div>
@@ -375,22 +630,26 @@
   const NOMINAL_RATE = 0.10;
   const DEFAULT_YEARS = 32;
 
-  const presetLabels = {
-    coffee: 'Coffee',
-    takeout: 'Take-Out',
-    lunch: 'Lunch',
-    nightout: 'Night Out',
-    custom: 'Custom',
+  const nouns = {
+    coffee: 'instead of coffee',
+    takeout: 'instead of take-out',
+    lunch: 'instead of lunch',
+    nightout: 'instead of a night out',
+    custom: 'instead of spending it',
   };
 
   const state = {
     amount: 20,
     activePreset: 'takeout',
-    yearsOverride: null,     // session-only
-    mode: 'real',            // 'real' | 'nominal'
+    yearsOverride: null,
+    mode: 'real',
     birthYear: null,
     retirementAge: null,
+    investUrl: null,
+    hintDismissed: false,
+    viewCount: 0,
   };
+  const HINT_MAX_VIEWS = 5;
 
   const fmt = new Intl.NumberFormat('en-US', {
     style: 'currency', currency: 'USD', maximumFractionDigits: 0,
@@ -405,6 +664,9 @@
       if (typeof p.birthYear === 'number') state.birthYear = p.birthYear;
       if (typeof p.retirementAge === 'number') state.retirementAge = p.retirementAge;
       if (p.mode === 'real' || p.mode === 'nominal') state.mode = p.mode;
+      if (typeof p.investUrl === 'string' && p.investUrl.trim()) state.investUrl = p.investUrl.trim();
+      if (typeof p.hintDismissed === 'boolean') state.hintDismissed = p.hintDismissed;
+      if (typeof p.viewCount === 'number') state.viewCount = p.viewCount;
     } catch (e) {}
   }
   function savePrefs() {
@@ -413,6 +675,9 @@
         birthYear: state.birthYear,
         retirementAge: state.retirementAge,
         mode: state.mode,
+        investUrl: state.investUrl,
+        hintDismissed: state.hintDismissed,
+        viewCount: state.viewCount,
       }));
     } catch (e) {}
   }
@@ -427,18 +692,23 @@
     }
     return DEFAULT_YEARS;
   }
+  function futureYear() { return new Date().getFullYear() + years(); }
   function futureValue() {
     const r = state.mode === 'real' ? REAL_RATE : NOMINAL_RATE;
     return state.amount * Math.pow(1 + r, years());
   }
 
-  // ---- render ----
+  // ---- elements ----
   const $ = (id) => document.getElementById(id);
   const els = {
     todayAmount: $('today-amount'),
+    nounDisplay: $('noun-display'),
     futureAmount: $('future-amount'),
-    yearsDisplay: $('years-display'),
+    futureUnderline: $('future-underline'),
+    futureUnderlinePath: document.querySelector('#future-underline path'),
+    yearDisplay: $('year-display'),
     assumption: $('assumption-text'),
+    nominalLabel: $('nominal-label'),
     toggleReal: $('toggle-real'),
     toggleNominal: $('toggle-nominal'),
     settingsBtn: $('settings-btn'),
@@ -447,21 +717,91 @@
     settingsSave: $('settings-save'),
     birthYearInput: $('birth-year'),
     retirementAgeInput: $('retirement-age'),
+    investUrlInput: $('invest-url'),
+    investCta: $('invest-cta'),
+    investCtaText: $('invest-cta-text'),
+    investHint: $('invest-hint'),
+    investHintLink: $('invest-hint-link'),
+    investHintDismiss: $('invest-hint-dismiss'),
   };
   const chipEls = document.querySelectorAll('.chip');
 
-  function render() {
+  // ---- count-up animation ----
+  let animFrame = null;
+  let underlineTimer = null;
+
+  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function sizeUnderlineToNumber() {
+    const w = els.futureAmount.offsetWidth;
+    els.futureUnderline.style.width = w + 'px';
+    const len = els.futureUnderlinePath.getTotalLength();
+    els.futureUnderline.style.setProperty('--len', len);
+  }
+
+  function drawUnderline() {
+    // size to final number, then trigger draw
+    sizeUnderlineToNumber();
+    // reflow to ensure new --len takes effect
+    void els.futureUnderline.offsetWidth;
+    els.futureUnderline.classList.add('drawn');
+  }
+
+  function animateFutureTo(target, duration = 1100) {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    if (underlineTimer) clearTimeout(underlineTimer);
+
+    // always start from 0 — every interaction is a fresh "watch it grow"
+    els.futureUnderline.classList.remove('drawn');
+    els.futureAmount.textContent = fmt.format(0);
+
+    const startTime = performance.now();
+
+    const step = (now) => {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = easeOutQuart(t);
+      const value = target * eased;
+      els.futureAmount.textContent = fmt.format(value);
+      if (t < 1) {
+        animFrame = requestAnimationFrame(step);
+      } else {
+        els.futureAmount.textContent = fmt.format(target);
+        underlineTimer = setTimeout(drawUnderline, 60);
+      }
+    };
+    animFrame = requestAnimationFrame(step);
+  }
+
+  // ---- render ----
+  function render({ duration = 1100 } = {}) {
     els.todayAmount.textContent = fmt.format(state.amount);
-    els.futureAmount.textContent = fmt.format(futureValue());
-    els.yearsDisplay.textContent = years();
+    els.nounDisplay.textContent = nouns[state.activePreset] || 'instead of spending it';
+    const fy = futureYear();
+    els.yearDisplay.textContent = fy;
+    els.nominalLabel.textContent = fy;
+
     chipEls.forEach(c => {
       c.setAttribute('aria-pressed', c.dataset.preset === state.activePreset ? 'true' : 'false');
     });
     els.toggleReal.setAttribute('aria-pressed', state.mode === 'real' ? 'true' : 'false');
     els.toggleNominal.setAttribute('aria-pressed', state.mode === 'nominal' ? 'true' : 'false');
     els.assumption.innerHTML = state.mode === 'real'
-      ? 'Assuming 7% real return (S&amp;P 500 historical, inflation-adjusted)'
-      : 'Assuming 10% nominal return (S&amp;P 500 historical, not inflation-adjusted)';
+      ? "assuming 7% real return — the S&amp;P 500's long-run average, adjusted for inflation"
+      : "assuming 10% nominal return — the S&amp;P 500's headline historical average, in future dollars";
+
+    // invest CTA + first-time hint (mutually exclusive)
+    if (state.investUrl) {
+      els.investCta.hidden = false;
+      els.investCta.href = state.investUrl;
+      els.investCtaText.textContent = `Invest the ${fmt.format(state.amount)} now`;
+      els.investHint.hidden = true;
+    } else {
+      els.investCta.hidden = true;
+      const showHint = !state.hintDismissed && state.viewCount <= HINT_MAX_VIEWS;
+      els.investHint.hidden = !showHint;
+    }
+
+    animateFutureTo(futureValue(), duration);
   }
 
   // ---- preset chips ----
@@ -472,19 +812,20 @@
       if (preset !== 'custom' && chip.dataset.amount) {
         state.amount = parseFloat(chip.dataset.amount);
       }
-      render();
+      render({ duration: 1100 });
     });
   });
 
   // ---- editable today amount ----
   function startEditAmount() {
-    if (els.todayAmount.classList.contains('editing')) return;
+    if (document.querySelector('.amount-input')) return;
     const input = document.createElement('input');
     input.type = 'text';
     input.inputMode = 'decimal';
     input.className = 'amount-input';
     input.value = String(state.amount);
     input.setAttribute('aria-label', 'Amount');
+    els.todayAmount.classList.add('editing');
     const parent = els.todayAmount.parentNode;
     parent.replaceChild(input, els.todayAmount);
     input.focus();
@@ -498,15 +839,13 @@
         state.activePreset = 'custom';
       }
       parent.replaceChild(els.todayAmount, input);
-      render();
+      els.todayAmount.classList.remove('editing');
+      render({ duration: 900 });
     };
     input.addEventListener('blur', commit);
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-      if (e.key === 'Escape') {
-        input.value = String(state.amount);
-        input.blur();
-      }
+      if (e.key === 'Escape') { input.value = String(state.amount); input.blur(); }
     });
   }
   els.todayAmount.addEventListener('click', startEditAmount);
@@ -514,64 +853,88 @@
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditAmount(); }
   });
 
-  // ---- editable years (session override) ----
-  function startEditYears() {
+  // ---- editable year ----
+  function startEditYear() {
     if (document.querySelector('.years-input')) return;
     const input = document.createElement('input');
     input.type = 'text';
     input.inputMode = 'numeric';
     input.className = 'years-input';
-    input.value = String(years());
-    input.setAttribute('aria-label', 'Years to retirement');
-    const parent = els.yearsDisplay.parentNode;
-    parent.replaceChild(input, els.yearsDisplay);
+    input.value = String(futureYear());
+    input.setAttribute('aria-label', 'Target year');
+    const parent = els.yearDisplay.parentNode;
+    parent.replaceChild(input, els.yearDisplay);
     input.focus();
     input.select();
 
     const commit = () => {
       const v = parseInt(input.value.replace(/[^0-9]/g, ''), 10);
-      if (!isNaN(v) && v >= 0 && v <= 100) {
-        state.yearsOverride = v;
+      const nowYear = new Date().getFullYear();
+      if (!isNaN(v) && v >= nowYear && v <= nowYear + 100) {
+        state.yearsOverride = v - nowYear;
       }
-      parent.replaceChild(els.yearsDisplay, input);
-      render();
+      parent.replaceChild(els.yearDisplay, input);
+      render({ duration: 1100 });
     };
     input.addEventListener('blur', commit);
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-      if (e.key === 'Escape') { input.value = String(years()); input.blur(); }
+      if (e.key === 'Escape') { input.value = String(futureYear()); input.blur(); }
     });
   }
-  els.yearsDisplay.addEventListener('click', startEditYears);
-  els.yearsDisplay.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditYears(); }
+  els.yearDisplay.addEventListener('click', startEditYear);
+  els.yearDisplay.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditYear(); }
   });
 
   // ---- toggle ----
-  els.toggleReal.addEventListener('click', () => { state.mode = 'real'; savePrefs(); render(); });
-  els.toggleNominal.addEventListener('click', () => { state.mode = 'nominal'; savePrefs(); render(); });
+  els.toggleReal.addEventListener('click', () => {
+    if (state.mode === 'real') return;
+    state.mode = 'real';
+    savePrefs();
+    render({ duration: 1000 });
+  });
+  els.toggleNominal.addEventListener('click', () => {
+    if (state.mode === 'nominal') return;
+    state.mode = 'nominal';
+    savePrefs();
+    render({ duration: 1000 });
+  });
 
   // ---- settings modal ----
-  function openSettings() {
+  function openSettings({ focusField = 'birth-year' } = {}) {
     els.birthYearInput.value = state.birthYear ?? '';
     els.retirementAgeInput.value = state.retirementAge ?? '';
+    els.investUrlInput.value = state.investUrl ?? '';
     els.settingsModal.classList.add('open');
-    setTimeout(() => els.birthYearInput.focus(), 50);
+    const target = document.getElementById(focusField) || els.birthYearInput;
+    setTimeout(() => target.focus(), 60);
   }
-  function closeSettings() {
-    els.settingsModal.classList.remove('open');
-  }
+  function closeSettings() { els.settingsModal.classList.remove('open'); }
   function saveSettings() {
     const by = parseInt(els.birthYearInput.value, 10);
     const ra = parseInt(els.retirementAgeInput.value, 10);
     state.birthYear = (!isNaN(by) && by >= 1900 && by <= 2100) ? by : null;
     state.retirementAge = (!isNaN(ra) && ra >= 18 && ra <= 120) ? ra : null;
-    state.yearsOverride = null; // settings now drive years again
+    const url = (els.investUrlInput.value || '').trim();
+    state.investUrl = url || null;
+    state.yearsOverride = null;
     savePrefs();
-    render();
+    render({ duration: 1100 });
     closeSettings();
   }
-  els.settingsBtn.addEventListener('click', openSettings);
+  els.settingsBtn.addEventListener('click', () => openSettings());
+
+  // ---- first-time hint ----
+  els.investHintLink.addEventListener('click', () => {
+    openSettings({ focusField: 'invest-url' });
+  });
+  els.investHintDismiss.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.hintDismissed = true;
+    savePrefs();
+    els.investHint.hidden = true;
+  });
   els.settingsCancel.addEventListener('click', closeSettings);
   els.settingsSave.addEventListener('click', saveSettings);
   els.settingsModal.addEventListener('click', (e) => {
@@ -583,7 +946,14 @@
 
   // ---- init ----
   loadPrefs();
-  render();
+  state.viewCount = (state.viewCount || 0) + 1;
+  savePrefs();
+  // give fonts a tick to load so the underline width measurement is accurate
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => render({ duration: 1800 }));
+  } else {
+    render({ duration: 1800 });
+  }
 })();
 </script>
 </body>
