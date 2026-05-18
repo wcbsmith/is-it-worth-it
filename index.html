@@ -175,7 +175,7 @@
     display: inline-block;
   }
   .future-amount {
-    display: block;
+    display: inline-block;
     font-size: 76px;
     line-height: 1;
     font-variation-settings: 'opsz' 144, 'SOFT' 30, 'wght' 500;
@@ -209,6 +209,45 @@
     transition: border-color 180ms ease;
   }
   .year:hover { border-bottom-color: var(--accent); }
+
+  .frequency {
+    font-style: italic;
+    font-variation-settings: 'opsz' 36, 'SOFT' 80, 'wght' 500;
+    color: var(--ink);
+    cursor: pointer;
+    border-bottom: 1px dashed var(--muted);
+    padding: 0 2px 1px;
+    margin: 0 -2px;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+  .frequency:hover { border-bottom-color: var(--accent); }
+
+  .make-recurring-line {
+    margin: 6px 0 0 !important;
+  }
+  .make-recurring-line[hidden] { display: none; }
+  .make-recurring-btn {
+    background: transparent;
+    border: 0;
+    padding: 4px 0;
+    font-family: inherit;
+    font-style: italic;
+    font-variation-settings: 'opsz' 14, 'SOFT' 80, 'wght' 400;
+    font-size: 15px;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color 180ms ease, text-decoration-color 180ms ease;
+  }
+  .make-recurring-btn:hover,
+  .make-recurring-btn:focus-visible {
+    color: var(--ink-soft);
+    text-decoration-color: var(--accent);
+    outline: none;
+  }
 
   /* meta zone — operations live here */
   .meta {
@@ -558,12 +597,17 @@
       <span class="chip-sep" aria-hidden="true">·</span>
       <button class="chip" data-preset="nightout" data-amount="60">a night out</button>
       <span class="chip-sep" aria-hidden="true">·</span>
+      <button class="chip" data-preset="subscription" data-amount="15" data-frequency="monthly">a subscription</button>
+      <span class="chip-sep" aria-hidden="true">·</span>
       <button class="chip" data-preset="custom">something else</button>
     </div>
   </section>
 
   <section class="letter">
-    <p class="reveal reveal-2">If you invest this <span class="today-amount" id="today-amount" tabindex="0" role="button" aria-label="Tap to edit amount">$20</span> <span class="noun" id="noun-display">instead of take-out</span>,</p>
+    <p class="reveal reveal-2">If you invest<span id="this-word"> this</span> <span class="today-amount" id="today-amount" tabindex="0" role="button" aria-label="Tap to edit amount">$20</span><span id="every-phrase" hidden> every <span class="frequency" id="frequency-display" tabindex="0" role="button" aria-label="Tap to change frequency">month</span></span> <span class="noun" id="noun-display">instead of take-out</span>,</p>
+    <p class="make-recurring-line reveal reveal-2" id="make-recurring" hidden>
+      <button class="make-recurring-btn" id="make-recurring-btn" type="button">make this recurring →</button>
+    </p>
     <p class="future-line reveal reveal-3"><span class="future-you">future you</span> could have</p>
     <p class="future-amount-wrap reveal reveal-3">
       <span class="future-amount" id="future-amount" aria-live="polite">$0</span>
@@ -630,17 +674,10 @@
   const NOMINAL_RATE = 0.10;
   const DEFAULT_YEARS = 32;
 
-  const nouns = {
-    coffee: 'instead of coffee',
-    takeout: 'instead of take-out',
-    lunch: 'instead of lunch',
-    nightout: 'instead of a night out',
-    custom: 'instead of spending it',
-  };
-
   const state = {
     amount: 20,
     activePreset: 'takeout',
+    frequency: 'once',
     yearsOverride: null,
     mode: 'real',
     birthYear: null,
@@ -650,6 +687,22 @@
     viewCount: 0,
   };
   const HINT_MAX_VIEWS = 5;
+
+  const nounsByPreset = {
+    coffee: 'instead of coffee',
+    takeout: 'instead of take-out',
+    lunch: 'instead of lunch',
+    nightout: 'instead of a night out',
+    subscription: 'instead of this subscription',
+  };
+  function nounFor(preset, frequency) {
+    if (preset === 'custom') {
+      if (frequency === 'monthly') return 'instead of spending it monthly';
+      if (frequency === 'yearly') return 'instead of spending it yearly';
+      return 'instead of spending it';
+    }
+    return nounsByPreset[preset] || 'instead of spending it';
+  }
 
   const fmt = new Intl.NumberFormat('en-US', {
     style: 'currency', currency: 'USD', maximumFractionDigits: 0,
@@ -695,7 +748,17 @@
   function futureYear() { return new Date().getFullYear() + years(); }
   function futureValue() {
     const r = state.mode === 'real' ? REAL_RATE : NOMINAL_RATE;
-    return state.amount * Math.pow(1 + r, years());
+    const n = years();
+    if (n <= 0) return state.amount;
+    if (state.frequency === 'monthly') {
+      const rm = r / 12;
+      const nm = n * 12;
+      return state.amount * (Math.pow(1 + rm, nm) - 1) / rm;
+    }
+    if (state.frequency === 'yearly') {
+      return state.amount * (Math.pow(1 + r, n) - 1) / r;
+    }
+    return state.amount * Math.pow(1 + r, n);
   }
 
   // ---- elements ----
@@ -723,6 +786,11 @@
     investHint: $('invest-hint'),
     investHintLink: $('invest-hint-link'),
     investHintDismiss: $('invest-hint-dismiss'),
+    thisWord: $('this-word'),
+    everyPhrase: $('every-phrase'),
+    frequencyDisplay: $('frequency-display'),
+    makeRecurring: $('make-recurring'),
+    makeRecurringBtn: $('make-recurring-btn'),
   };
   const chipEls = document.querySelectorAll('.chip');
 
@@ -753,6 +821,7 @@
 
     // always start from 0 — every interaction is a fresh "watch it grow"
     els.futureUnderline.classList.remove('drawn');
+    els.futureUnderline.style.width = '0px'; // collapse so wrap can shrink before re-measure
     els.futureAmount.textContent = fmt.format(0);
 
     const startTime = performance.now();
@@ -774,8 +843,19 @@
 
   // ---- render ----
   function render({ duration = 1100 } = {}) {
+    const isRecurring = state.frequency !== 'once';
+
     els.todayAmount.textContent = fmt.format(state.amount);
-    els.nounDisplay.textContent = nouns[state.activePreset] || 'instead of spending it';
+    els.nounDisplay.textContent = nounFor(state.activePreset, state.frequency);
+
+    // frequency / "this" / "every {month|year}" visibility
+    els.thisWord.hidden = isRecurring;
+    els.everyPhrase.hidden = !isRecurring;
+    els.frequencyDisplay.textContent = state.frequency === 'yearly' ? 'year' : 'month';
+
+    // make-recurring affordance: only when in Custom + once
+    els.makeRecurring.hidden = !(state.activePreset === 'custom' && state.frequency === 'once');
+
     const fy = futureYear();
     els.yearDisplay.textContent = fy;
     els.nominalLabel.textContent = fy;
@@ -785,15 +865,28 @@
     });
     els.toggleReal.setAttribute('aria-pressed', state.mode === 'real' ? 'true' : 'false');
     els.toggleNominal.setAttribute('aria-pressed', state.mode === 'nominal' ? 'true' : 'false');
-    els.assumption.innerHTML = state.mode === 'real'
-      ? "assuming 7% real return — the S&amp;P 500's long-run average, adjusted for inflation"
-      : "assuming 10% nominal return — the S&amp;P 500's headline historical average, in future dollars";
+
+    // footnote — adds compounding note in recurring modes
+    const rateLabel = state.mode === 'real'
+      ? "7% real return — the S&amp;P 500's long-run average, adjusted for inflation"
+      : "10% nominal return — the S&amp;P 500's headline historical average, in future dollars";
+    const compounding = state.frequency === 'monthly'
+      ? ', compounded monthly'
+      : state.frequency === 'yearly'
+        ? ', compounded annually'
+        : '';
+    els.assumption.innerHTML = `assuming ${rateLabel.replace('return', 'return' + compounding)}`;
 
     // invest CTA + first-time hint (mutually exclusive)
     if (state.investUrl) {
       els.investCta.hidden = false;
       els.investCta.href = state.investUrl;
-      els.investCtaText.textContent = `Invest the ${fmt.format(state.amount)} now`;
+      const amt = fmt.format(state.amount);
+      els.investCtaText.textContent = state.frequency === 'monthly'
+        ? `Set up a ${amt}/mo transfer`
+        : state.frequency === 'yearly'
+          ? `Set up a ${amt}/yr transfer`
+          : `Invest the ${amt} now`;
       els.investHint.hidden = true;
     } else {
       els.investCta.hidden = true;
@@ -812,6 +905,7 @@
       if (preset !== 'custom' && chip.dataset.amount) {
         state.amount = parseFloat(chip.dataset.amount);
       }
+      state.frequency = chip.dataset.frequency || 'once';
       render({ duration: 1100 });
     });
   });
@@ -885,6 +979,24 @@
   els.yearDisplay.addEventListener('click', startEditYear);
   els.yearDisplay.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditYear(); }
+  });
+
+  // ---- frequency cycle (month ↔ year) ----
+  function cycleFrequency() {
+    if (state.frequency === 'monthly') state.frequency = 'yearly';
+    else if (state.frequency === 'yearly') state.frequency = 'monthly';
+    else return; // not recurring, ignore
+    render({ duration: 1100 });
+  }
+  els.frequencyDisplay.addEventListener('click', cycleFrequency);
+  els.frequencyDisplay.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cycleFrequency(); }
+  });
+
+  // ---- make recurring (custom mode → monthly) ----
+  els.makeRecurringBtn.addEventListener('click', () => {
+    state.frequency = 'monthly';
+    render({ duration: 1100 });
   });
 
   // ---- toggle ----
